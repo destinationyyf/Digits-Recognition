@@ -1,0 +1,229 @@
+---
+title: "Final Project"
+author: "Yifan Yang"
+output: pdf_document
+---
+
+###General Analysis
+
+First of all, we should do the general analysis.
+
+We can write the pdf for $X_i$ as:
+
+$$p(X_i)=\sum_{m=1}^M \pi_m p(X_i|\mu_m) = \sum_{m=1}^M \pi_m(\prod_{j=1}^D \mu_{mj}^{x_{ij}}(1-\mu_{mj})^{1-x_{ij}})$$
+
+Based on the above pdf formula and the contents in class, we can define the latent variables $Z_i$s for every $X_i$ which contains M variables representing the class labels for $X_i$. Then, we should take expectation over those $Z_i$s based on the parameters of $\mu$ and $\pi$, and do the maximization.
+
+The log-likelihood can be separated as two parts as:
+
+$$
+\begin{aligned}
+ln\ p(X,\mu,\pi) & =ln\ p(X\ |\ \mu,\pi)+ln\ p(\mu,\pi) \\
+                & =ln\ p(X\ |\ \mu,\pi)+ln\ p(\mu)+ln\ p(\pi)
+\end{aligned}
+$$
+
+In which the first part we take it as complete-data log-likelihood and can be written as:
+
+$$ln\ p(X\ |\ \mu,\pi)=\sum_{i=1}^N
+\sum_{m=1}^M Z_{im}(ln\ \pi_m+\sum_{j=1}^D ln\  p(x_{ij},\mu_{mj})))$$
+
+Denote the parameter $\{\mu_m,\pi_m\}$ as $\theta_m$. We can take initial values of $\theta$, defined as $\theta^{old}$, and take expetation in term of $\theta^{old}$ on this formula, so we can obtain the form of $Q(\theta,\theta^{old})$
+
+$$Q(\theta,\theta^{old}) = \int p(Z|X,\theta^{old})ln(p(Z,X|\theta))dz=\sum_{i=1}^N
+\sum_{m=1}^M \gamma_{\theta^{old}}(z_{im})(ln\ \pi_m+\sum_{j=1}^D ln\ p(x_{ij},\mu_{mj}))$$
+
+In which $\gamma_{\theta^{old}}(z_{im})$ refers to the expected value of $z_{im}$ based on $\theta^{old}$.
+
+Therefore, our aim is to maximize the following formula in terms of $\theta$:
+
+$$Q(\theta,\theta^{old})+ln\ p(\theta)=\sum_{m=1}^M (ln\ p(\mu_m)+ln\ p(\pi_m))+\sum_{i=1}^N
+\sum_{m=1}^M \gamma_{\theta^{old}}(z_{im})(ln\ \pi_m+\sum_{j=1}^D ln\ p(x_{ij},\mu_{mj}))$$
+
+We do the EM algorithm to deal with the case, namely calculate $\theta$ iteratively until it converges to some standard.
+
+###(a)
+
+Given the prior of $\mu_{mj}$ is $Beta(2,2)$ and $\pi_m$ is $Dirichlet(2,2,...,2)$, We can calculate the pdf for $\mu_{mj}$: $p(\mu_{mj})=6(1-\mu_{mj})\mu_{mj}$. and $\pi_m$: $p_2(\pi_m)={(2M-1)!}\prod_{m=1}^M \pi_m$.
+
+In order to solve the optimal parameter, we take derivatives here and make them 0.
+$$\frac{\partial l}{\partial \mu_{mj}}=\frac{1-2\mu_{mj}+\sum_{i=1}^N \gamma_{\theta^{old}}(z_{im})(x_{ij}-\mu_{mj})}{\mu_{mj}(1-\mu_{mj})}$$
+
+Solve this equation, we obtain:
+
+$$\hat{\mu}_{mj}=\frac{1+\sum_{i=1}^N \gamma_{\theta^{old}}(z_{im})x_{ij}}{2+\sum_{i=1}^N \gamma_{\theta^{old}}(z_{im})},\;\;j=1,2...D\ \ \ \ \ m=1,2...M$$
+
+In terms of $\pi_m$, we have the restriction of $\sum\pi_m=1$, so we take Lagrangian here:
+
+$$\frac{\partial l}{\partial \pi_{m}}=\frac{1+\sum_{i=1}^N \gamma_{\theta^{old}}(z_{im})}{\pi_m}-\lambda$$
+
+So we have:
+
+$$\hat{\pi}_m=\frac{1+\sum_{i=1}^N \gamma_{\theta^{old}}(z_{im})}{\lambda},\ \ \ \ m=1,2...M$$
+
+Then we use $\sum\hat{\pi}_m=1$ to figure out that $\lambda=M+N$.
+
+Thus, $$\hat{\pi}_m=\frac{1+\sum_{i=1}^N \gamma_{\theta^{old}}(z_{im})}{M+N},\ \ \ \ m=1,2...M$$
+
+##(b)
+
+Here we consider is the initialization step. Assign each example $X_i$ at random to one of the M components of $Z_i$ (for example: if assigned to class m, we have $z_{im}=1$, and $z_{ik}=0$ for all $k\neq m$). 
+
+Based on the results of (a) we only need to substitute the $\gamma_{\theta^{old}}(z_{im})$ part to simple $z_{im}$ and do the calculation. The log-likelihood formula is:
+
+$$Q(\theta,\theta^{old})+ln\ p(\theta)=\sum_{m=1}^M (ln\ p(\mu_m)+ln\ p(\pi_m))+\sum_{i=1}^N
+\sum_{m=1}^M z_{im}(ln\ \pi_m+\sum_{j=1}^D ln\ p(x_{ij},\mu_{mj}))$$
+
+So we can get:
+
+$$\hat{\mu}_{mj}=\frac{1+\sum_{i=1}^N z_{im}x_{ij}}{2+\sum_{i=1}^N z_{im}},\;\;j=1,2...D\ \ \ \ \ m=1,2...M$$
+
+$$\hat{\pi}_m=\frac{1+\sum_{i=1}^N z_{im}}{M+N},\ \ \ \ m=1,2...M$$
+
+##(c)
+
+We can easily prove that both expressions are identical since when dividing $exp(l^*)$ on both sides of the fraction of the second form, we can have the first expression.
+
+The reason why this transformation is important is that the value of every part of $\pi_m p(X_i|\mu_m)$ is very close to 0, so when we take log form and subtract the largest one (namely $exp(l-l^*)$), the value of such form would be much more computable than the original form which is pretty similar to $\frac{0}{0}$ to the computer.
+
+##(d)
+
+Here are the results for `M=2,3,5,8`, the log-likelihood in every iteration and the image of every component in the mixture Bernoulli model:
+
+```{r,echo=F,comment="*"}
+source("/Users/Destination/Desktop/Rcode.R")
+```
+
+*M=2*
+
+```{r,echo=F,fig.width=3,fig.height=3}
+D=d; N=num.training; N0=num.test; dif=10^-6
+M=2
+result2=ema(10^-6,2,training.data,plot=T)
+cat("Number of iterations:",result2$iterations,"\n")
+```
+
+Likelihood:
+
+```{r,echo=F,comment=""}
+result2$log_likelihood
+mu2=result2$mu; pi2=result2$pi
+```
+
+*M=3*
+
+```{r,echo=F,fig.width=3,fig.height=3}
+M=3
+result3=ema(10^-6,2,training.data,plot=T)
+cat("Number of iterations:",result3$iterations,"\n")
+```
+
+Likelihood:
+
+```{r,echo=F,comment=""}
+result3$log_likelihood
+mu3=result3$mu; pi3=result3$pi
+```
+
+*M=5*
+
+```{r,echo=F,fig.width=3,fig.height=3}
+M=5
+result5=ema(10^-6,2,training.data,plot=T)
+cat("Number of iterations:",result5$iterations,"\n")
+```
+
+Likelihood:
+
+```{r,echo=F,comment=""}
+result5$log_likelihood
+mu5=result5$mu; pi5=result5$pi
+```
+
+*M=8*
+
+```{r,echo=F,fig.width=3,fig.height=3}
+M=8
+result8=ema(10^-6,2,training.data,plot=T)
+cat("Number of iterations:",result8$iterations,"\n")
+```
+
+Likelihood:
+
+```{r,echo=F,comment=""}
+result8$log_likelihood
+mu8=result8$mu; pi8=result8$pi
+result=list(mu2=mu2,pi2=pi2,mu3=mu3,pi3=pi3,mu5=mu5,pi5=pi5,mu8=mu8,pi8=pi8)
+save(result,file="output.RData")
+```
+
+From all these components in the mixture model, we can see the difference among them is primarily the shape (or the type of writing) of the digit, and by using more components M, we can probably obtain larger likelihood and the number of iterations tends to increase, the uncertainty is due to the random allocation within the initial step.
+
+###(e)
+
+Steps:
+
+* Select two digits and a particular M
+* Use EM algorithm in (d) to fit two models for both digits, and obtain their correponding $\pi$ and $\mu$
+* Selecting the test data for both digits
+* Based on $\pi$ and $\mu$, we can get the likelihood for every testing data in every part (results are two matrices with dimension 1000*M)
+* Then we can use the formula for $l$ in c to obtain the mixture likelihood for every testing data
+* If the mixture likelihood is bigger in the "supposed" group than the other, we should label it as "correct", otherwise, it should be labeled "error"
+
+Namely the mathmetical expresion is that (`n` stands for digits):
+
+$$
+\hat{y}(X^*) = argmax_{n} \sum_{m=1}^{M} \hat \pi_{mn} p(X^*|\hat \mu_{mn}) 
+$$
+
+Another thought is to compare the largest log-likelihood in M components (not the weighted mixture likelihood). The rationale is that a single data can only be generated with a particular component, so we can assume it derives from the component which has the largest likelihood.
+
+The mathmetical expression for this is:
+
+$$
+\hat{y}(X^*) = argmax_{n}\ \  max( p(X^*|\hat \mu_{mn}) )
+$$
+
+And the testing error can both be obtained by:
+
+$$
+\hat{Err}(\hat y) = \frac{\#\{\hat y(X^*) \neq real\ digits\ of\ X^*\}}{\#Testing Data}$$
+
+
+I make the whole matrix (10*10) for every combination of two digits, and report the overall testing errors for both methods mentioned. Here, I use `M=5`.
+
+```{r,echo=F,comment=""}
+source("/Users/Destination/Desktop/Rcode.R")
+D=d; N=num.training; N0=num.test; dif=10^-6
+M=5
+emerror(test.data)
+```
+
+It is easy to see that the test error are all quite small, the comparsion between 4 and 9 has the largest error rate since these two digits are quite alike. 
+
+Moreover, outputs from both standards are pretty similar, showing that these two methods can both be effective.
+
+Besides, we can also test the effect of value of M on the testing error rate (here I use 4 and 9):
+
+```{r,echo=F,comment=""}
+class1=4; class2=9; N0=1000; error=vector()
+for(M in 2:10)
+{
+  out4=ema(dif,4,training.data,plot=F); out9=ema(dif,9,training.data,plot=F)
+  miu1=out4$mu; miu2=out9$mu
+  pi1=out4$pi; pi2=out9$pi
+  index10=rep(class1+1,N0)+10*rep(0:(N0-1),each=1)
+  index20=rep(class2+1,N0)+10*rep(0:(N0-1),each=1)
+  test1=test.data[index10,]; test2=test.data[index20,]
+      
+  l11=sl(test1,miu1,pi1,N0)$l; l12=sl(test1,miu2,pi2,N0)$l
+  l21=sl(test2,miu1,pi1,N0)$l; l22=sl(test2,miu2,pi2,N0)$l
+  error11=length(which(t(l11%*%pi1)-t(l12%*%pi2)<0))
+  error12=length(which(t(l22%*%pi2)-t(l21%*%pi1)<0))
+  error[M-1]=(error11+error12)/2000
+}
+plot(seq(9),error,xlab="M",ylab="testing error",type="l")
+
+```
+
+Which shows the decreasing trend in testing error when M gets larger. Again, it also depends on the randomness of the initial step.
