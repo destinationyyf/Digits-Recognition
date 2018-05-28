@@ -1,7 +1,7 @@
 # Digits-Recognition
 This project contains four files.
 
-digits.RData is the data source, it shows the digit images' information in terms of boolean form (TRUE or FALSE);
+digits.RData is the data source, it has two datasets, 'training.data' and  'test.data'. `training.data` is a large array with dimension 10 (number of digits: 0 ~ 9) * 1000 (number of pictures of each digit) * 20 * 20 (dimensionality of each digit, boolean form). `test.data` is 10 * 500 * 20 * 20.
 
 Rcode.R includes all main functions that have been used in the project;
 
