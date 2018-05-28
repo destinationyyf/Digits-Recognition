@@ -91,7 +91,7 @@ The reason why this transformation is important is that the value of every part 
 Here are the results for `M=2,3,5,8`, the log-likelihood in every iteration and the image of every component in the mixture Bernoulli model:
 
 ```{r,echo=F,comment="*"}
-source("/Users/Destination/Desktop/Rcode.R")
+source("/Users/Destination/Documents/University of Chicago/24600/Digits Recognition/Rcode.R")
 ```
 
 *M=2*
@@ -193,7 +193,6 @@ $$
 I make the whole matrix (10*10) for every combination of two digits, and report the overall testing errors for both methods mentioned. Here, I use `M=5`.
 
 ```{r,echo=F,comment=""}
-source("/Users/Destination/Desktop/Rcode.R")
 D=d; N=num.training; N0=num.test; dif=10^-6
 M=5
 emerror(test.data)

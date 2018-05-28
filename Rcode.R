@@ -135,30 +135,30 @@ N = num.training
 N0 = num.test
 dif = 10^-6
 
-M=2
+M = 2
 result2 = ema(10^-6,2,training.data, plot = T)
-cat("Number of iterations:",result$iterations,"\n")
+cat("Number of iterations:",result2$iterations,"\n")
 result2$log_likelihood
 mu2 = result2$mu; pi2 = result2$pi
 
 M = 3
 result3 = ema(10^-6,2,training.data, plot = T)
-cat("Number of iterations:",result$iterations,"\n")
+cat("Number of iterations:",result3$iterations,"\n")
 result3$log_likelihood
-mu3 = result3$mu; pi3 = resul3t$pi
+mu3 = result3$mu; pi3 = result3$pi
 
 M = 5
 result5 = ema(10^-6,2,training.data, plot = T)
-cat("Number of iterations:",result$iterations,"\n")
+cat("Number of iterations:",result5$iterations,"\n")
 result5$log_likelihood
-mu3 = result5$mu; pi3 = result5$pi
+mu5 = result5$mu; pi5 = result5$pi
 
 M = 8
 result8 = ema(10^-6,2,training.data, plot = T)
-cat("Number of iterations:", result$iterations, "\n")
+cat("Number of iterations:", result8$iterations, "\n")
 result8$log_likelihood
-mu8 = result3$mu; pi8 = resul3t$pi
+mu8 = result8$mu; pi8 = result8$pi
 
 ## Final result
-result=list(mu2 = mu2, pi2 = pi2, mu3 = mu3, pi3 = pi3,
+result = list(mu2 = mu2, pi2 = pi2, mu3 = mu3, pi3 = pi3,
             mu5 = mu5, pi5 = pi5, mu8 = mu8, pi8 = pi8)
