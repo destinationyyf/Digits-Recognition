@@ -1,6 +1,6 @@
 # Digits-Recognition
 
-The techniques used in the project is EM algorithm under assumptions of mixture Gaussian. When two specific digits are chosen, basically we assume these two digits' pictures originate from `M` different Gaussian distributions separately (`2M` Gaussians in all), and use training set by means of EM to determine the mean and variance of every normal distribution, along with the probability of allocating a new picture into these distributions. Then we classify pictures of both digits in test set based on MLE. 
+The techniques used in the project is EM algorithm under assumptions of mixture Bernoulli (since the picture can be vectorized as multi-dimensional boolean vectors). When two specific digits are chosen, basically we assume these two digits' pictures originate from `M` different Bernoulli distributions separately (`2M` Gaussians in all), and use training set by means of EM to determine the parameter in every Bernoulli, along with the probabilities of allocating a new picture into these distributions. Then we classify pictures of both digits in test set based on MLE. 
 
 This project contains four files.
 
