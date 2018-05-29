@@ -1,4 +1,7 @@
 # Digits-Recognition
+
+The techniques used in the project is EM algorithm under assumptions of mixture Gaussian. When two specific digits are chosen, basically we assume these two digits' pictures originate from $M$ different Gaussian distributions separately ($2M$ Gaussians in all), and use training set by means of EM to determine the mean and variance of every normal distribution, along with the probability of allocating a new picture into these distributions. Then we classify pictures of both digits in test set based on MLE. 
+
 This project contains four files.
 
 digits.RData is the data source, it has two datasets, 'training.data' and  'test.data'. `training.data` is a large array with dimension 10 (number of digits: 0 ~ 9) * 1000 (number of pictures of each digit) * 20 * 20 (dimensionality of each digit, boolean form). `test.data` is 10 * 500 * 20 * 20.
